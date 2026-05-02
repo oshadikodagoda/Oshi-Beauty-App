@@ -1,6 +1,6 @@
 <template>
   <main class="max-w-[1920px] mx-auto px-6 md:px-12 pt-16 pb-20">
-    <!-- Hero Section - Text Only -->
+    <!-- Hero Section -->
     <header class="mb-16">
       <h1 class="text-5xl md:text-7xl text-primary dark:text-blue-300 font-headline tracking-tighter leading-tight mb-4">
         The Ritual of <br/><span class="italic font-normal">Luminous Skin</span>
@@ -10,7 +10,7 @@
       </p>
     </header>
 
-    <!-- Sort Bar Only (No Filters) - Fixed Dark Mode -->
+    <!-- Sort Bar -->
     <div class="flex flex-wrap justify-end items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700">
       <select 
         v-model="sortBy"
@@ -36,9 +36,14 @@
       <button @click="loadProducts" class="bg-primary text-white px-6 py-2 rounded-full">Try Again</button>
     </div>
 
-    <!-- Product Grid -->
+    <!-- Product Grid - Make sure products are clickable -->
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-      <div v-for="product in sortedProducts" :key="product.id" class="group cursor-pointer" @click="goToProduct(product.id)">
+      <div 
+        v-for="product in sortedProducts" 
+        :key="product.id" 
+        class="group cursor-pointer" 
+        @click="goToProduct(product.id)"
+      >
         <div class="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden mb-4 relative">
           <img :src="product.thumbnail" :alt="product.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <button @click.stop="addToCart(product)" class="absolute bottom-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md">
@@ -61,11 +66,10 @@
       </div>
     </div>
 
-    <!-- Newsletter Section -->
+    <!-- Newsletter -->
     <section class="mt-32 bg-primary dark:bg-blue-600 py-16 px-12 rounded-2xl text-center text-white">
       <div class="max-w-2xl mx-auto">
         <h2 class="text-3xl font-headline mb-4">Join the Inner Circle</h2>
-        <p class="text-blue-100 mb-6">Be the first to experience our seasonal drops and exclusive offers.</p>
         <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
           <input v-model="email" type="email" placeholder="Your email address" class="bg-white/10 border-white/20 text-white placeholder:text-white/50 rounded-full px-6 py-3 flex-grow focus:ring-1 focus:ring-white outline-none" />
           <button @click="subscribe" class="bg-white text-primary px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">Subscribe</button>
@@ -90,21 +94,10 @@ const sortBy = ref('default');
 
 const sortedProducts = computed(() => {
   let list = [...allProducts.value];
-  
-  switch (sortBy.value) {
-    case 'price-asc':
-      list.sort((a, b) => a.price - b.price);
-      break;
-    case 'price-desc':
-      list.sort((a, b) => b.price - a.price);
-      break;
-    case 'name-asc':
-      list.sort((a, b) => a.title.localeCompare(b.title));
-      break;
-    case 'rating':
-      list.sort((a, b) => b.rating - a.rating);
-      break;
-  }
+  if (sortBy.value === 'price-asc') list.sort((a, b) => a.price - b.price);
+  if (sortBy.value === 'price-desc') list.sort((a, b) => b.price - a.price);
+  if (sortBy.value === 'name-asc') list.sort((a, b) => a.title.localeCompare(b.title));
+  if (sortBy.value === 'rating') list.sort((a, b) => b.rating - a.rating);
   return list;
 });
 
@@ -118,8 +111,14 @@ const addToCart = (product: any) => {
       image: product.thumbnail,
       brand: product.brand || 'Oshi Beauty'
     });
-    alert(`${product.title} added to cart!`);
+    alert(`Added ${product.title} to cart!`);
   }
+};
+
+// This function navigates to product detail page
+const goToProduct = (id: number) => {
+  console.log('Navigating to product ID:', id);
+  router.push(`/product/${id}`);
 };
 
 const subscribe = () => {
@@ -135,18 +134,13 @@ const loadProducts = async () => {
   
   try {
     const response = await fetch('https://dummyjson.com/products/category/skin-care');
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
-    }
-    
+    if (!response.ok) throw new Error('Failed to fetch products');
     const data = await response.json();
     allProducts.value = data.products || [];
-    console.log('Skincare products loaded:', allProducts.value.length);
-    
+    console.log('Products loaded:', allProducts.value.length);
   } catch (err: any) {
     console.error('API Error:', err);
-    error.value = 'Unable to load skincare products. Please check your internet connection.';
+    error.value = 'Unable to load products.';
   } finally {
     loading.value = false;
   }
