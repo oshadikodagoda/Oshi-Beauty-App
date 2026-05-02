@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Hero Section -->
+    <!-- Hero Section with Background Image -->
     <section class="relative h-[921px] w-full overflow-hidden flex items-center">
       <div class="absolute inset-0 z-0">
         <img 
@@ -19,10 +19,12 @@
           Discover our curated selection of high-performance formulas designed to celebrate your natural luminosity.
         </p>
         <div class="flex gap-4">
-          <button class="bg-primary dark:bg-blue-600 text-white px-10 py-4 rounded-full font-semibold uppercase tracking-wider hover:bg-primary/90 transition shadow-lg">
+          <!-- EXPLORE button - goes to Skincare page -->
+          <router-link to="/skincare" class="bg-primary dark:bg-blue-600 text-white px-10 py-4 rounded-full font-semibold uppercase tracking-wider hover:bg-primary/90 transition shadow-lg">
             EXPLORE
-          </button>
-          <button class="text-primary dark:text-blue-300 font-semibold uppercase tracking-wider py-4 hover:underline transition">
+          </router-link>
+          <!-- VIEW LOOKBOOK button - scrolls to products section -->
+          <button @click="scrollToProducts" class="text-primary dark:text-blue-300 font-semibold uppercase tracking-wider py-4 hover:underline transition">
             View Lookbook
           </button>
         </div>
@@ -55,17 +57,12 @@
           <p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed max-w-xl">
             We believe skincare is a ritual of self-appreciation. Our Luminous collection blends rare botanical extracts with modern molecular science.
           </p>
-          <div class="pt-6">
-            <a href="#" class="text-primary dark:text-blue-300 font-semibold uppercase tracking-wider text-sm border-b border-primary dark:border-blue-300 pb-1 hover:opacity-80 transition">
-              Discover the Ritual
-            </a>
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- Curated Essentials - FROM DUMMYJSON API -->
-    <section class="py-32 px-12 bg-white dark:bg-gray-900">
+    <!-- Curated Essentials -->
+    <section id="products" class="py-32 px-12 bg-white dark:bg-gray-900">
       <div class="max-w-[1920px] mx-auto">
         <div class="flex justify-between items-end mb-16">
           <div>
@@ -75,19 +72,10 @@
           <a href="#" class="text-primary dark:text-blue-300 font-semibold border-b border-primary dark:border-blue-300 pb-1 hover:opacity-80 transition">Shop All Essentials</a>
         </div>
         
-        <!-- Loading State -->
         <div v-if="loading" class="text-center py-20">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary dark:border-blue-300"></div>
-          <p class="mt-4 text-gray-500">Loading products from DummyJSON...</p>
         </div>
         
-        <!-- Error State -->
-        <div v-else-if="error" class="text-center py-20">
-          <p class="text-red-500 mb-4">{{ error }}</p>
-          <button @click="loadProducts" class="bg-primary text-white px-6 py-2 rounded-full">Try Again</button>
-        </div>
-        
-        <!-- Products Grid - Data from DummyJSON -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div v-for="product in products" :key="product.id" class="group cursor-pointer" @click="goToProduct(product.id)">
             <div class="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded-xl mb-6 overflow-hidden relative">
@@ -114,9 +102,6 @@
             <p>Oshi Beauty began as a small apothecary in the hills, founded on the belief that luxury should be synonymous with purity. We meticulously source ingredients that honor the earth and your skin alike.</p>
             <p>Our artisans blend traditional wisdom with innovative science to create products that don't just sit on the skin, but transform it from within.</p>
           </div>
-          <button class="mt-10 border border-primary dark:border-blue-300 px-8 py-3 rounded-full font-semibold uppercase tracking-widest text-xs hover:bg-primary hover:text-white dark:hover:bg-blue-600 transition-all">
-            Read Our Story
-          </button>
         </div>
         <div class="lg:col-span-7 order-1 lg:order-2 flex justify-end">
           <div class="w-full h-[600px] bg-slate-200 dark:bg-gray-700 rounded-2xl overflow-hidden shadow-2xl relative rotate-2 hover:rotate-0 transition-transform duration-1000">
@@ -157,21 +142,28 @@ const router = useRouter();
 const cartStore = useCartStore();
 const products = ref<any[]>([]);
 const loading = ref(true);
-const error = ref('');
 const email = ref('');
 
-// Beauty-related categories to filter
-const beautyCategories = ['beauty', 'skin-care', 'fragrances'];
+// Scroll to products section when clicking View Lookbook
+const scrollToProducts = () => {
+  const productsSection = document.getElementById('products');
+  if (productsSection) {
+    productsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+};
 
 const addToCart = (product: any) => {
-  cartStore.addItem({
-    id: product.id,
-    title: product.title,
-    price: `LKR ${(product.price * 40).toLocaleString()}`,
-    image: product.thumbnail,
-    brand: product.brand || 'Oshi Beauty'
-  });
-  alert(`Added ${product.title} to cart!`);
+  const confirmed = confirm(`Add ${product.title} to cart?`);
+  if (confirmed) {
+    cartStore.addItem({
+      id: product.id,
+      title: product.title,
+      price: `LKR ${(product.price * 40).toLocaleString()}`,
+      image: product.thumbnail,
+      brand: product.brand || 'Oshi Beauty'
+    });
+    alert(`${product.title} added to cart!`);
+  }
 };
 
 const goToProduct = (id: number) => {
@@ -185,31 +177,20 @@ const handleSubscribe = () => {
   }
 };
 
+// Beauty-related categories
+const beautyCategories = ['beauty', 'skin-care', 'fragrances'];
+
 const loadProducts = async () => {
   loading.value = true;
-  error.value = '';
-  
   try {
-    // Fetch from DummyJSON API
     const response = await fetch('https://dummyjson.com/products?limit=30');
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
-    }
-    
     const data = await response.json();
-    
-    // Filter to only beauty-related products
     const beautyProducts = data.products.filter((p: any) => 
       beautyCategories.includes(p.category)
     );
-    
     products.value = beautyProducts.slice(0, 4);
-    console.log('Products loaded from DummyJSON:', products.value.length);
-    
-  } catch (err: any) {
-    console.error('API Error:', err);
-    error.value = 'Unable to load products. Please check your internet connection.';
+  } catch (error) {
+    console.error('Failed to load products:', error);
   } finally {
     loading.value = false;
   }

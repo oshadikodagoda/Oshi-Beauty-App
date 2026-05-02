@@ -1,81 +1,58 @@
 <template>
   <main class="max-w-[1920px] mx-auto px-6 md:px-12 pt-16 pb-20">
-    <!-- Hero Section -->
+    <!-- Hero Section - Text Only -->
     <header class="mb-16">
-      <h1 class="text-7xl md:text-8xl text-primary dark:text-blue-300 font-headline tracking-tighter leading-none mb-6">
-        The Ritual of <br/><span class="italic font-normal">Luminous</span> Skin
+      <h1 class="text-5xl md:text-7xl text-primary dark:text-blue-300 font-headline tracking-tighter leading-tight mb-4">
+        The Ritual of <br/><span class="italic font-normal">Luminous Skin</span>
       </h1>
-      <p class="text-lg text-secondary max-w-xl font-body leading-relaxed">
-        Discover textures that melt into the skin. High-performance formulas designed for the modern Sri Lankan complexion.
+      <p class="text-lg text-secondary max-w-2xl font-body leading-relaxed dark:text-gray-300">
+        Explore our essential collection of premium formulations, crafted for visible results and lasting hydration.
       </p>
     </header>
 
-    <!-- Filter and Sort Bar -->
-    <div class="flex flex-wrap justify-between items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-3xl font-headline text-primary dark:text-blue-300">The Collection</h2>
-      <div class="flex gap-3">
-        <button 
-          @click="showFilters = !showFilters"
-          class="px-5 py-2 rounded-full border border-gray-300 dark:border-gray-600 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-        >
-          <span class="material-symbols-outlined text-lg">tune</span>
-          Filters
-        </button>
-        <select 
-          v-model="sortBy"
-          @change="sortProducts"
-          class="px-5 py-2 rounded-full border border-gray-300 dark:border-gray-600 text-sm font-medium bg-transparent cursor-pointer focus:outline-none"
-        >
-          <option value="default">Sort By</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Name: A to Z</option>
-          <option value="rating">Best Rating</option>
-        </select>
-      </div>
+    <!-- Sort Bar Only (No Filters) - Fixed Dark Mode -->
+    <div class="flex flex-wrap justify-end items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700">
+      <select 
+        v-model="sortBy"
+        class="px-5 py-2 rounded-full border border-gray-300 dark:border-gray-600 text-sm font-medium bg-white dark:bg-gray-800 cursor-pointer focus:outline-none text-gray-700 dark:text-gray-300"
+      >
+        <option value="default" class="text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">Sort By</option>
+        <option value="price-asc" class="text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">Price: Low to High</option>
+        <option value="price-desc" class="text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">Price: High to Low</option>
+        <option value="name-asc" class="text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">Name: A to Z</option>
+        <option value="rating" class="text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">Best Rating</option>
+      </select>
     </div>
 
-    <!-- Filter Chips -->
-    <div v-if="showFilters" class="flex flex-wrap gap-3 mb-8 pb-4 border-b border-gray-200 dark:border-gray-700">
-      <button 
-        v-for="filter in filterOptions" 
-        :key="filter"
-        @click="selectedFilter = filter"
-        :class="[
-          'px-4 py-1.5 rounded-full text-sm transition-all',
-          selectedFilter === filter 
-            ? 'bg-primary text-white' 
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-        ]"
-      >
-        {{ filter }}
-      </button>
-      <button 
-        v-if="selectedFilter !== 'All'"
-        @click="selectedFilter = 'All'"
-        class="px-4 py-1.5 rounded-full text-sm text-primary hover:underline"
-      >
-        Clear All
-      </button>
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-20">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <p class="mt-4 text-gray-500">Loading skincare products...</p>
     </div>
 
-    <!-- Product Grid - Only 4 Products -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-      <div v-for="product in filteredAndSortedProducts" :key="product.id" class="group cursor-pointer" @click="goToProduct(product.id)">
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-20">
+      <p class="text-red-500 mb-4">{{ error }}</p>
+      <button @click="loadProducts" class="bg-primary text-white px-6 py-2 rounded-full">Try Again</button>
+    </div>
+
+    <!-- Product Grid -->
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+      <div v-for="product in sortedProducts" :key="product.id" class="group cursor-pointer" @click="goToProduct(product.id)">
         <div class="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden mb-4 relative">
-          <img :src="product.image" :alt="product.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img :src="product.thumbnail" :alt="product.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <button @click.stop="addToCart(product)" class="absolute bottom-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md">
             <span class="material-symbols-outlined text-primary dark:text-blue-300 text-xl">add</span>
           </button>
-          <span v-if="product.discount" class="absolute top-4 left-4 bg-primary text-white text-xs px-2 py-1 rounded-full">
-            {{ product.discount }}
+          <span v-if="product.discountPercentage" class="absolute top-4 left-4 bg-primary text-white text-xs px-2 py-1 rounded-full">
+            {{ Math.round(product.discountPercentage) }}% OFF
           </span>
         </div>
         <h3 class="font-headline text-lg text-primary dark:text-blue-300 mb-1">{{ product.title }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ product.brand }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ product.brand || 'Oshi Beauty' }}</p>
         <div class="flex items-center gap-2">
-          <p class="font-bold text-primary dark:text-blue-300">{{ product.price }}</p>
-          <p v-if="product.originalPrice" class="text-xs text-gray-400 line-through">{{ product.originalPrice }}</p>
+          <p class="font-bold text-primary dark:text-blue-300">LKR {{ (product.price * 40).toLocaleString() }}</p>
+          <p v-if="product.discountPercentage" class="text-xs text-gray-400 line-through">LKR {{ (Math.round(product.price * 1.3) * 40).toLocaleString() }}</p>
         </div>
         <div class="flex items-center gap-1 mt-1">
           <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
@@ -99,133 +76,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCartStore } from '@/stores/cart';
 
 const router = useRouter();
 const cartStore = useCartStore();
+const allProducts = ref<any[]>([]);
+const loading = ref(true);
+const error = ref('');
 const email = ref('');
-const showFilters = ref(false);
-const selectedFilter = ref('All');
 const sortBy = ref('default');
 
-// Filter options
-const filterOptions = ['All', 'Body Wash', 'Body Lotion', 'Hand Soap'];
-
-// Only these 4 products as shown in your screenshot
-const products = ref([
-  {
-    id: 1,
-    title: 'Attitude Super Leaves Hand Soap',
-    category: 'Hand Soap',
-    brand: 'Attitude',
-    price: 'LKR 1,250',
-    originalPrice: 'LKR 1,520',
-    discount: '18% OFF',
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1612892485217-9d8c5c6efbf0?w=300',
-    description: 'Gentle hand soap with natural ingredients.'
-  },
-  {
-    id: 2,
-    title: 'Olay Ultra Moisture Shea Butter Body Wash',
-    category: 'Body Wash',
-    brand: 'Olay',
-    price: 'LKR 2,100',
-    originalPrice: 'LKR 2,500',
-    discount: '16% OFF',
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=300',
-    description: 'Ultra-moisturizing body wash with shea butter.'
-  },
-  {
-    id: 3,
-    title: 'Vaseline Men Body and Face Lotion',
-    category: 'Body Lotion',
-    brand: 'Vaseline',
-    price: 'LKR 1,850',
-    originalPrice: 'LKR 2,130',
-    discount: '13% OFF',
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1620916566397-39f1143ab9be?w=300',
-    description: '2-in-1 lotion for body and face.'
-  },
-  {
-    id: 4,
-    title: 'Moisturizing Body Wash',
-    category: 'Body Wash',
-    brand: 'Olay',
-    price: 'LKR 1,850',
-    originalPrice: 'LKR 2,500',
-    discount: '26% OFF',
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=300',
-    description: 'Deeply moisturizing body wash for soft skin.'
-  }
-]);
-
-const addToCart = (product: any) => {
-  cartStore.addItem({
-    id: product.id,
-    title: product.title,
-    price: product.price,
-    image: product.image,
-    brand: product.brand
-  });
-  alert(`Added ${product.title} to cart!`);
-};
-
-const goToProduct = (id: number) => {
-  router.push(`/product/${id}`);
-};
-
-const sortProducts = () => {
-  // Sorting logic handled by computed property
-};
-
-// Filter products based on selected filter
-const filteredProducts = computed(() => {
-  let filtered = [...products.value];
-  
-  if (selectedFilter.value !== 'All') {
-    filtered = filtered.filter(product => product.category === selectedFilter.value);
-  }
-  
-  return filtered;
-});
-
-// Sort products
-const filteredAndSortedProducts = computed(() => {
-  let productsList = [...filteredProducts.value];
+const sortedProducts = computed(() => {
+  let list = [...allProducts.value];
   
   switch (sortBy.value) {
     case 'price-asc':
-      productsList.sort((a, b) => {
-        const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
-        const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
-        return priceA - priceB;
-      });
+      list.sort((a, b) => a.price - b.price);
       break;
     case 'price-desc':
-      productsList.sort((a, b) => {
-        const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
-        const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
-        return priceB - priceA;
-      });
+      list.sort((a, b) => b.price - a.price);
       break;
     case 'name-asc':
-      productsList.sort((a, b) => a.title.localeCompare(b.title));
+      list.sort((a, b) => a.title.localeCompare(b.title));
       break;
     case 'rating':
-      productsList.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      break;
-    default:
+      list.sort((a, b) => b.rating - a.rating);
       break;
   }
-  
-  return productsList;
+  return list;
 });
+
+const addToCart = (product: any) => {
+  const confirmed = confirm(`Add ${product.title} to cart?`);
+  if (confirmed) {
+    cartStore.addItem({
+      id: product.id,
+      title: product.title,
+      price: `LKR ${(product.price * 40).toLocaleString()}`,
+      image: product.thumbnail,
+      brand: product.brand || 'Oshi Beauty'
+    });
+    alert(`${product.title} added to cart!`);
+  }
+};
 
 const subscribe = () => {
   if (email.value) {
@@ -233,6 +128,33 @@ const subscribe = () => {
     email.value = '';
   }
 };
+
+const loadProducts = async () => {
+  loading.value = true;
+  error.value = '';
+  
+  try {
+    const response = await fetch('https://dummyjson.com/products/category/skin-care');
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    
+    const data = await response.json();
+    allProducts.value = data.products || [];
+    console.log('Skincare products loaded:', allProducts.value.length);
+    
+  } catch (err: any) {
+    console.error('API Error:', err);
+    error.value = 'Unable to load skincare products. Please check your internet connection.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadProducts();
+});
 </script>
 
 <style scoped>

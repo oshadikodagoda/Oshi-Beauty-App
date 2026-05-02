@@ -70,12 +70,6 @@
             <p>Oshi Beauty began as a personal quest for purity. In an era of mass-produced synthetics, we sought the silent power of botanicals—plants that thrive in the harshest coastal winds and deepest forest shadows.</p>
             <p>Our heritage is not just in our history, but in our hands. Every formula is iterated upon until it achieves the perfect 'Oshi' balance: transformative results with a weightless, sensory grace.</p>
           </div>
-          <div class="pt-4">
-            <button class="inline-flex items-center gap-3 text-primary font-bold group">
-              <span class="tracking-widest uppercase text-sm">Explore our archive</span>
-              <span class="w-12 h-[1px] bg-primary group-hover:w-16 transition-all duration-300"></span>
-            </button>
-          </div>
         </div>
       </div>
     </section>
@@ -131,7 +125,7 @@
       </div>
     </section>
 
-    <!-- CTA Section -->
+    <!-- CTA Section - Updated -->
     <section class="py-32 px-6 md:px-12">
       <div class="max-w-4xl mx-auto text-center space-y-8">
         <h2 class="text-5xl text-primary italic">Begin Your Journey</h2>
@@ -140,7 +134,6 @@
           <router-link to="/gifts" class="bg-primary text-white px-10 py-4 rounded-full font-label uppercase tracking-widest text-sm hover:opacity-90 transition-opacity active:scale-95 shadow-lg">
             Shop Gift Sets
           </router-link>
-          <p class="text-primary font-medium text-sm">Free delivery on all gift sets. <span class="underline ml-1">Learn more</span></p>
         </div>
       </div>
     </section>
