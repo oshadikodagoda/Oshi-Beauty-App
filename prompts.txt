@@ -1,0 +1,44 @@
+The aim 01: Set up Vue 3 project with TypeScript and Tailwind CSS
+Actual prompt: Create a new Vue 3 project with TypeScript, Vue Router, Pinia, and Tailwind CSS. Use Vite as the build tool.
+
+The aim 02: Design the homepage with hero section and product grid
+Actual prompt: Create a homepage for a luxury beauty e-commerce brand called Oshi Beauty. Include a hero section with background image, promotional bar, product grid, and newsletter signup. Use Tailwind CSS for styling.
+
+The aim 03: Create product listing pages with filters and sort
+Actual prompt: Create a skincare page that fetches products from DummyJSON API. Add filters for categories and sorting options for price, name, and rating. Display products in a responsive grid with add to cart buttons.
+
+The aim 04: Implement shopping cart with Pinia
+Actual prompt: Create a shopping cart using Pinia state management. Include add item, remove item, update quantity, and persist cart data in localStorage. Display cart count badge in the navigation bar.
+
+The aim 05: Create dynamic product detail page
+Actual prompt: Create a product detail page that fetches product data from DummyJSON API using the product ID from the URL. Include product image, title, description, price, quantity selector, and add to cart button.
+
+The aim 06: Implement dark mode toggle
+Actual prompt: Add dark mode support using Tailwind CSS dark: modifier. Create a toggle button in the navigation bar that switches between light and dark themes and saves the preference in localStorage.
+
+The aim 07: Create search page with suggestions and results
+Actual prompt: Create a search page with an overlay design. Include search input, suggested searches, trending products, and real-time search results from DummyJSON API.
+
+The aim 08: Create checkout and payment flow
+Actual prompt: Create a checkout page with shipping information form and payment method selection. Add a card payment page with input validation and success confirmation. Redirect to order success page after payment.
+
+The aim 09: Create bundle offers page with discount system
+Actual prompt: Create an offers page with bundle deals (15%, 20%, 25%, 32% OFF). Add confirmation dialogs before adding bundles to cart. Display bundle discount in cart and order summary.
+
+The aim 10: Fix dark mode visibility issues
+Actual prompt: Fix dark mode in sort dropdowns across all pages. Make sure text is visible in dark mode by adding appropriate dark: classes to select options and dropdowns.
+
+The aim 11: Fix product detail page loading
+Actual prompt: Fix product detail page to correctly display products when clicked from skincare, makeup, and fragrance pages. Ensure the product ID is properly passed and fetched from DummyJSON API.
+
+The aim 12: Create GitHub repository and push code
+Actual prompt: Initialize Git in the project, create a .gitignore file, and push the code to a public GitHub repository with meaningful commit messages.
+
+The aim 13: Create order success page
+Actual prompt: Create an order success page with order confirmation message, order number, delivery date, shipping address, and payment method. Remove the order summary section.
+
+The aim 14: Add confirmation dialogs for add to cart
+Actual prompt: Add confirm() dialogs when users click add to cart, showing the product name and asking for confirmation before adding to cart.
+
+The aim 15: Remove Gifts page and replace with Coming Soon
+Actual prompt: Replace the Gifts page with a Coming Soon page because DummyJSON doesn't have proper gift products (it returns groceries like dog food and eggs).
