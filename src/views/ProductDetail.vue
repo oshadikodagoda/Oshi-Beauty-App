@@ -42,7 +42,7 @@
           <span class="text-gray-600 dark:text-gray-400">Quantity:</span>
           <div class="flex items-center border dark:border-gray-700 rounded-full">
             <button @click="decreaseQuantity" class="px-4 py-2 hover:text-primary transition">-</button>
-            <span class="px-4 py-2 min-w-[50px] text-center dark:text-white">{{ quantity }}</span>
+            <span class="px-4 py-2 min-w-[50px] text-center text-gray-800 dark:text-white">{{ quantity }}</span>
             <button @click="increaseQuantity" class="px-4 py-2 hover:text-primary transition">+</button>
           </div>
         </div>
